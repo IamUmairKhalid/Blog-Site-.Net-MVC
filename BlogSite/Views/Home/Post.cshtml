@@ -1,0 +1,27 @@
+﻿@model Post
+<!-- Grid -->
+<div class="w3-row">
+    
+        <!-- Blog entry -->
+        <div class="w3-card-4 w3-margin w3-white">
+            <div class="w3-container">
+                <h3><b>@Model.Title</b></h3>
+                <h5>@Model.SubTitle, <span class="w3-opacity">@Model.Date</span></h5>
+            </div>
+
+            <div class="w3-container">
+                <p>
+                    @Model.Content
+                </p>
+                <div class="w3-row">
+                    <div class="w3-col m8 s12">
+                        <p><a class="w3-button w3-padding-medium w3-black w3-border" href="/Home"><b>Go Back »</b></a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+         
+    <!-- END GRID -->
+</div>
+<br>
