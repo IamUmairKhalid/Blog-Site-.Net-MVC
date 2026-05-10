@@ -1,0 +1,78 @@
+﻿@model PostVM
+
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold border-start border-warning border-4 ps-3 text-primary">Update Post</h2>
+        </div>
+    </div>
+
+    <form method="post" asp-area="Admin" asp-controller="Home" asp-action="UpdatePost" asp-route-id="@Model.Id" enctype="multipart/form-data">
+        <input hidden name="Id" asp-for="@Model.Id" />
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label fw-bold text-muted small">TITLE</label>
+                            <input asp-for="Title" class="form-control form-control-lg bg-light" required />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SubTitle" class="form-label fw-bold text-muted small">SUBTITLE</label>
+                            <input asp-for="SubTitle" class="form-control bg-light" rows="2" required />
+                            <span asp-validation-for="SubTitle" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-0">
+                            <label asp-for="Content" class="form-label fw-bold small text-muted">BODY CONTENT</label>
+                            <textarea asp-for="Content" id="editor">@Model.Content</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <h6 class="fw-bold mb-4 text-primary">Post Settings</h6>
+
+                        <div class="mb-3">
+                            <label asp-for="Slug" class="form-label fw-bold text-muted small">URL SLUG</label>
+                            <input asp-for="Slug" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Date" class="form-label fw-bold text-muted small">PUBLISH DATE</label>
+                            <input asp-for="Date" class="form-control bg-light" readonly />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small">CURRENT IMAGE</label>
+                            <div class="mb-2">
+                                <img src="~/Images/@ViewBag.CurrentImage" class="img-thumbnail w-100" style="max-height: 150px; object-fit: cover;" />
+                            </div>
+                            <label class="form-label fw-bold text-muted small">REPLACE IMAGE (OPTIONAL)</label>
+                            <div class="p-2 border rounded bg-light text-center">
+                                <input asp-for="Image" />
+                            </div>
+                            <small class="text-muted mt-1 d-block">Leave empty to keep current image.</small>
+                        </div>
+
+                        <div class="mt-auto pt-3">
+                            <button type="submit" class="btn btn-warning w-100 py-2 fw-bold mb-2">Save Changes</button>
+                            <a href="/Admin/Home/ViewDetails/@Model.Id" class="btn btn-outline-secondary w-100 py-2">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<script>
+    ClassicEditor.create(document.querySelector('#editor')).catch(error => { console.error(error); });
+</script>

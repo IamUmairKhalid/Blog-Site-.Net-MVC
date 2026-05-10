@@ -1,4 +1,6 @@
-﻿namespace BlogSite.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace BlogSite.Models
 {
     public class Post
     {
@@ -9,6 +11,6 @@
         public string Date { get; set; }
         public string Image { get; set; }
         public string Slug { get; set; }
-
+        
     }
 }

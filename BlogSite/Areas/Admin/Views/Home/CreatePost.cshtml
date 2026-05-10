@@ -1,3 +1,86 @@
-﻿@{
-}
-<h1>Hello World</h1>
+﻿@using BlogSite.ViewModel
+@model PostVM
+
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold border-start border-primary border-4 ps-3 text-primary">Create Blog Post</h2>
+        </div>
+    </div>
+
+    <form method="post" asp-area="Admin" asp-controller="Home" asp-action="CreatePost"  enctype="multipart/form-data">
+        <div class="row g-4">
+
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-4">
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label fw-bold text-muted small">TITLE</label>
+                            <input asp-for="Title" class="form-control form-control-lg bg-light" placeholder="Enter post title..." required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SubTitle" class="form-label fw-bold text-muted small">SUBTITLE</label>
+                            <input asp-for="SubTitle" class="form-control bg-light" placeholder="Short description..." required/>
+                        </div>
+
+                        <div class="mb-0">
+                            <label asp-for="Content" class="form-label fw-bold small text-muted">BODY CONTENT</label>
+                            <textarea asp-for="Content" id="editor"></textarea>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-4 d-flex flex-column">
+
+                        <h6 class="fw-bold mb-4 text-primary">Post Settings</h6>
+
+                        <div class="mb-3">
+                            <label asp-for="Slug" class="form-label fw-bold text-muted small">URL SLUG</label>
+                            <input asp-for="Slug" class="form-control" placeholder="my-blog-post" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Date" class="form-label fw-bold text-muted small">PUBLISH DATE</label>
+                            <input asp-for="Date" type="text" class="form-control bg-light text-center"
+                                   value="@DateTime.Now.ToString("dd-MM-yyyy")" readonly />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small">FEATURED IMAGE</label>
+                            <div class="p-3 border rounded bg-light text-center">
+                                <i class="bi bi-cloud-arrow-up fs-2 text-secondary"></i>
+                                <input asp-for="Image" />
+                            </div>
+                        </div>
+
+                        <div class="mt-auto pt-3">
+                            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold mb-2">Publish Post</button>
+                            <a href="/Admin/Home/Index" class="btn btn-outline-secondary w-100 py-2">Back to Dashboard</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+
+<script>
+    ClassicEditor
+        .create(document.querySelector('#editor'))
+        .then(editor => {
+            console.log('Editor was initialized');
+        })
+        .catch(error => {
+            console.error(error);
+        });
+</script>

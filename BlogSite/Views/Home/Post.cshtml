@@ -1,9 +1,11 @@
 ﻿@model Post
-<!-- Grid -->
-<div class="w3-row">
-    
-        <!-- Blog entry -->
+@using System.Web
+<!-- Blog entries -->
+<div class="w3-col l8 s12">
+<!-- Blog entry -->
         <div class="w3-card-4 w3-margin w3-white">
+        <img src="~/Images/@Model.Image"
+             style="height: 350px; width: 100%; object-fit: cover;">
             <div class="w3-container">
                 <h3><b>@Model.Title</b></h3>
                 <h5>@Model.SubTitle, <span class="w3-opacity">@Model.Date</span></h5>
@@ -11,7 +13,7 @@
 
             <div class="w3-container">
                 <p>
-                    @Model.Content
+                    @Html.Raw(HttpUtility.HtmlDecode(Model.Content))
                 </p>
                 <div class="w3-row">
                     <div class="w3-col m8 s12">
@@ -21,7 +23,4 @@
             </div>
         </div>
         <hr>
-         
-    <!-- END GRID -->
 </div>
-<br>

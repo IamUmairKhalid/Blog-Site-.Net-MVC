@@ -1,0 +1,91 @@
+﻿@model Post
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <a href="/Admin/Home/ViewPosts" class="btn btn-light border shadow-sm">
+                    Back to List
+                </a>
+                <div class="btn-group shadow-sm">
+                    <a asp-action="UpdatePost" asp-controller="Home" asp-area="Admin" asp-route-id="@Model.Id" class="btn btn-outline-primary">
+                        Edit Post
+                    </a>
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        Delete
+                    </button>
+                </div>
+            </div>
+
+            <article class="card border-0 shadow-sm overflow-hidden" style="border-radius: 15px;">
+                @if (!string.IsNullOrEmpty(Model.Image))
+                {
+                    <img src="~/Images/@Model.Image" class="img-fluid w-100" style="max-height: 450px; object-fit: cover;" alt="@Model.Title">
+                }
+
+                <div class="card-body p-4 p-md-5">
+                    <div class="mb-3">
+                        <span class="badge bg-primary-soft text-primary border border-primary px-3 py-2 rounded-pill">
+                            Published on @Model.Date
+                        </span>
+                    </div>
+
+                    <div class="w3-container text-black">
+                        <h3><b>@Model.Title</b></h3>
+                        <h5>@Model.SubTitle </h5>
+                    </div>
+
+                    <div class="w3-container">
+                        <p>
+                            @Html.Raw(Model.Content)
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <div class="text-danger mb-3">
+                    <span style="font-size: 3rem;">&#9888;</span>
+                </div>
+                <h4>Are you sure?</h4>
+                <p class="text-muted">You are about to delete <strong>"@Model.Title"</strong>. This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer bg-light border-0 justify-content-center">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="DeletePost" asp-controller="Home" asp-area="Admin" asp-route-id="@Model.Id" method="post">
+                    <button type="submit" class="btn btn-danger px-4">Yes, Delete It</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Styling the HTML content coming from the rich text editor */
+    .blog-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+    }
+
+    .blog-content h1, .blog-content h2, .blog-content h3 {
+        margin-top: 2rem;
+        font-weight: 700;
+    }
+
+    .bg-primary-soft {
+        background-color: #e7f1ff;
+    }
+</style>
