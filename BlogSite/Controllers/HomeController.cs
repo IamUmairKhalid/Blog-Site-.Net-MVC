@@ -14,21 +14,47 @@ namespace BlogSite.Controllers
             db = _db;
         }
 
-        [HttpGet]
-        public IActionResult Index()
+        
+        public IActionResult Index(string? searchquery)
         {
-            IEnumerable<Post> Posts = db.Tbl_Post.ToList();
-
+            LayoutData();
+            if(searchquery != null)
+            {
+                IEnumerable<Post> SearchedPost = db.Tbl_Post.OrderDescending().Where(x => x.Content.Contains(searchquery));
+                return View(SearchedPost);
+            }
+            IEnumerable<Post> Posts = db.Tbl_Post.OrderDescending().ToList();
             return View(Posts);
         }
 
-        [HttpGet]
+        
         [Route("Home/Post/{slug}")]
         public IActionResult Post(string slug)
         {
+            LayoutData();
+
             Post? post = db.Tbl_Post.FirstOrDefault(x => x.Slug == slug);
+            if (post == null)
+            {
+                return NotFound();
+            }
             return View(post);
         }
 
+        public void LayoutData()
+        {
+            ViewBag.posts = db.Tbl_Post;
+            ViewBag.profile = db.Tbl_Profile.FirstOrDefault();
+        }
+
+        [Route("Home/HandleError/{code}")]
+        public IActionResult HandleError(int code)
+        {
+            if (code == 404)
+            {
+                return View("NotFound");
+            }
+            return View("Error");
+        }
     }
 }

@@ -2,7 +2,9 @@
 using BlogSite.Models;
 using BlogSite.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BlogSite.Areas.Admin.Controllers
 {
@@ -20,18 +22,35 @@ namespace BlogSite.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            return View();
+            if (HttpContext.Session.GetString("Valid") != null)
+            {
+                DisplayData();
+                var posts = db.Tbl_Post.OrderByDescending(p => p.Date).ToList();
+                if (posts == null || posts.Count == 0)
+                {
+                    return NotFound();
+                }
+                return View(posts);
+            }
+            return RedirectToAction("LoginView", "Home");
         }
 
         public IActionResult CreatePost()
         {
-            return View();
+            if (HttpContext.Session.GetString("Valid") != null)
+            {
+                DisplayData();
+                ViewBag.image = "true";
+                return View();
+            }
+            return Redirect("/Admin/Home/LoginView/?ReturnUrl=/Admin/Home/CreatePost");
         }
 
         [HttpPost]
         public IActionResult CreatePost(PostVM post)
         {
-            if (ModelState.IsValid)
+            DisplayData();
+            if (ModelState.IsValid && post.Image != null)
             {
                 Post newPost = new Post();
 
@@ -55,51 +74,77 @@ namespace BlogSite.Areas.Admin.Controllers
 
                 db.Tbl_Post.Add(newPost);
                 db.SaveChanges();
+                return RedirectToAction("ViewPosts", "Home");
             }
-
-            return RedirectToAction("ViewPosts", "Home");
+            ViewBag.image = post.Image?.FileName.ToString();
+            return View();
         }
 
 
         public IActionResult ViewPosts()
         {
-            var AllPosts = db.Tbl_Post;
-
-            return View(AllPosts);
+            if(HttpContext.Session.GetString("Valid") != null)
+            {
+                DisplayData();
+                var AllPosts = db.Tbl_Post;
+                if (AllPosts == null)
+                {
+                    return NotFound();
+                }
+                return View(AllPosts);
+            }
+            return Redirect("/Admin/Home/LoginView?ReturnUrl=/Admin/Home/ViewPosts");
         }
 
         [HttpGet]
         [Route("Admin/Home/ViewDetails/{id}")]
         public IActionResult ViewDetails(int id)
         {
-            Post post = db.Tbl_Post.Find(id);
-
-            return View(post);
+            if(HttpContext.Session.GetString("Valid") != null)
+            {
+                DisplayData();
+                Post post = db.Tbl_Post.Find(id);
+                if (post == null)
+                {
+                    return NotFound();
+                }
+                return View(post);
+            }
+            return Redirect("/Admin/Home/LoginView");
         }
 
         
         public IActionResult UpdatePost(int id)
         {
-            Post oldPost = db.Tbl_Post.Find(id);
+            if (HttpContext.Session.GetString("Valid") != null)
+            {
+                DisplayData();
+                Post oldPost = db.Tbl_Post.Find(id);
 
-            PostVM post = new PostVM();
+                if (oldPost == null)
+                {
+                    return NotFound();
+                }
 
-            post.Id = oldPost.Id;
-            post.Title = oldPost.Title;
-            post.SubTitle = oldPost.SubTitle;
-            post.Content = oldPost.Content;
-            post.Date = oldPost.Date;
-            post.Slug = oldPost.Slug;
+                PostVM post = new PostVM();
 
-            ViewBag.CurrentImage = oldPost.Image;
+                post.Id = oldPost.Id;
+                post.Title = oldPost.Title;
+                post.SubTitle = oldPost.SubTitle;
+                post.Content = oldPost.Content;
+                post.Date = oldPost.Date;
+                post.Slug = oldPost.Slug;
 
-
-            return View(post);
+                ViewBag.CurrentImage = oldPost.Image;
+                return View(post);
+            }
+            return Redirect("/Admin/Home/LoginView");
         }
 
         [HttpPost]
         public IActionResult UpdatePost(PostVM post, int id)
         {
+            DisplayData();
             if (ModelState.IsValid)
             {
                 Post newPost = new Post();
@@ -107,6 +152,10 @@ namespace BlogSite.Areas.Admin.Controllers
 
                 newPost = db.Tbl_Post.Find(id);
 
+                if(newPost == null)
+                {
+                    return NotFound();
+                }
 
                 if (post.Image != null)
                 {
@@ -133,24 +182,147 @@ namespace BlogSite.Areas.Admin.Controllers
 
                 db.Tbl_Post.Update(newPost);
                 db.SaveChanges();
+                return RedirectToAction("ViewPosts", "Home");
             }
-
-            return RedirectToAction("ViewPosts", "Home");
+            var existingData = db.Tbl_Post.Find(post.Id);
+            ViewBag.CurrentImage = existingData?.Image;
+            return View(post);
         }
 
         public IActionResult DeletePost(int id)
         {
-            var post = db.Tbl_Post.Find(id);
-            if (post != null)
+            if(HttpContext.Session.GetString("Valid") != null)
             {
+                var post = db.Tbl_Post.Find(id);
+                if (post != null)
+                {
 
-                string old_image = post.Image;
-                DeletePicture(old_image);
+                    string old_image = post.Image;
+                    DeletePicture(old_image);
 
-                db.Tbl_Post.Remove(post);
-                db.SaveChanges();
+                    db.Tbl_Post.Remove(post);
+                    db.SaveChanges();
+                }
             }
-            return RedirectToAction("ViewPosts", "Home", "Admin");
+            return RedirectToAction("ViewPosts", "Home");
+        }
+
+
+        public IActionResult ProfileView()
+        {
+            if (HttpContext.Session.GetString("Valid") != null)
+            {
+                DisplayData();
+                Profile profile = db.Tbl_Profile.Find(HttpContext.Session.GetInt32("LoginId"));
+
+                if (profile == null)
+                {
+                    return NotFound();
+                }
+
+                ProfileVM newprofile = new ProfileVM();
+
+                newprofile.username = profile.username;
+                newprofile.Password = profile.Password;
+                newprofile.Name = profile.Name;
+                newprofile.FatherName = profile.FatherName;
+                newprofile.Id = profile.Id;
+                newprofile.Bio = profile.Bio;
+                ViewBag.ProfileImage = profile?.Image;
+                
+                return View(newprofile);
+            }
+            return Redirect("/Admin/Home/LoginView?ReturnUrl=/Admin/Home/ProfileView");
+        }
+
+        [HttpPost]
+        public IActionResult ProfileView(ProfileVM profile)
+        {
+            DisplayData();
+            if (ModelState.IsValid)
+            {
+                Profile newprofile = new Profile();
+                string ImageName;
+
+                newprofile = db.Tbl_Profile.Find(profile.Id);
+
+
+                if (profile.Image != null)
+                {
+                    string old_image = newprofile.Image;
+                    DeletePicture(old_image);
+
+                    ImageName = profile.Id.ToString() + profile.Image.FileName.ToString();
+                    var FolderPath = Path.Combine(env.WebRootPath, "Images");
+                    var ImagePath = Path.Combine(FolderPath, ImageName);
+
+
+                    var myFileStream = new FileStream(ImagePath, FileMode.Create);
+
+                    profile.Image.CopyTo(myFileStream);
+                    myFileStream.Close();
+
+                    newprofile.Image = ImageName;
+                }
+
+                newprofile.username = profile.username;
+                if(profile.Password != null)
+                {
+                    newprofile.Password = profile.Password;
+                }
+                newprofile.Name = profile.Name;
+                newprofile.FatherName = profile.FatherName;
+                newprofile.Id = profile.Id;
+                newprofile.Bio = profile.Bio;
+                ViewBag.ProfileImage = profile?.Image;
+
+                db.Tbl_Profile.Update(newprofile);
+                db.SaveChanges();
+
+                return RedirectToAction("ProfileView", "Home");
+            }
+            var existingData = db.Tbl_Profile.Find(profile.Id);
+            ViewBag.ProfileImage = existingData?.Image; 
+            return View(profile);
+        }
+
+        public IActionResult LoginView()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult LoginView(LoginVM user, string? returnUrl)
+        {
+            if(ModelState.IsValid)
+            {
+                var validuser = db.Tbl_Profile.Where(x => x.username == user.Username && x.Password == user.Password).FirstOrDefault();
+                if(validuser != null)
+                {
+                    HttpContext.Session.SetInt32("LoginId", validuser.Id);
+                    HttpContext.Session.SetString("Valid", "true");
+
+                    if(returnUrl == null)
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        return  Redirect(returnUrl);
+                    }
+                }
+                ViewBag.LoginFlag = "Invalid Username or Password";
+                return View();
+            }
+            return View();
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+
+            return RedirectToAction("Index", "Home", new { area = "" });
         }
 
         public void DeletePicture(string old_pic)
@@ -166,5 +338,9 @@ namespace BlogSite.Areas.Admin.Controllers
             }
         }
 
+        public void DisplayData()
+        {
+            ViewBag.Profile = db.Tbl_Profile.Where(x => x.Id == HttpContext.Session.GetInt32("LoginId")).AsNoTracking().FirstOrDefault();
+        }
     }
 }

@@ -2,6 +2,7 @@ using BlogSite.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSession();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -15,6 +16,11 @@ if(!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseStatusCodePagesWithReExecute("/Home/HandleError/{0}");
+
+app.UseStaticFiles();
+
+app.UseSession();
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthorization();

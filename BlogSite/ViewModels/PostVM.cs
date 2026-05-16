@@ -12,8 +12,10 @@ namespace BlogSite.ViewModel
 
         [Required(ErrorMessage ="Please provide subtitle")]
         public string SubTitle { get; set; }
+        [Required(ErrorMessage = "Please provide Content")]
         public string Content { get; set; }
         public string Date { get; set; }
+        [Required(ErrorMessage = "Please provide Slug")]
         public string Slug { get; set; }
 
 

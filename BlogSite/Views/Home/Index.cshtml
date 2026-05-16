@@ -7,40 +7,64 @@
     @foreach (var item in Model)
     {
         <!-- Blog entry -->
-        <div class="w3-card-4 w3-margin w3-white">
+        <div class="w3-card w3-margin w3-white w3-row w3-display-container" style="height: 300px; overflow: hidden;">
 
-            <img src="~/Images/@item.Image"
-                 alt="@item.Title"
-                 style="height: 350px; width: 100%; object-fit: cover;">
-
-            <div class="w3-container">
-                <h3><b>@item.Title</b></h3>
-                <h5>@item.SubTitle, <span class="w3-opacity">@item.Date</span></h5>
+            <div class="w3-col m5 s12" style="height: 300px; background-color: #f1f1f1;">
+                <img src="~/Images/@item.Image"
+                     alt="@item.Title"
+                     style="width: 100%; height: 300px; object-fit: cover; display: block;">
             </div>
 
-            <div class="w3-container">
-                <p>
-                    @if (item.Content.Length < 100)
-                    {
-                        @Html.Raw(HttpUtility.HtmlDecode(item.Content))
+            <div class="w3-col m7 s12 w3-container w3-padding-large" style="height: 300px; position: relative;">
+
+                <h3 style="margin-top: 0; height: 70px; overflow: hidden;">
+                    <b>
+                        @{
+                            @(item.Title.Length < 70 ? item.Title : item.Title.Substring(0, 70) + "...")
+                        }
+                </b></h3>
+
+                <h6 class="w3-opacity w3-small" style="margin-top: -10px;">
+                    @item.SubTitle | <span class="w3-text-grey">@item.Date</span>
+                </h6>
+
+                <div style="font-size: 14px; color: #444; height: 100px; overflow: hidden; line-height: 1.5;">
+                    @{
+                        var plainText = System.Text.RegularExpressions.Regex.Replace(
+                        HttpUtility.HtmlDecode(item.Content), "<.*?>", string.Empty);
+                        @plainText
                     }
-                    else
-                    {
-                        @Html.Raw(HttpUtility.HtmlDecode(item.Content.Substring(0, 100)))
-                    }
-                </p>
-                <div class="w3-row">
-                    <div class="w3-col m8 s12">
-                        <p><a class="w3-button w3-padding-large w3-white w3-border" asp-controller="Home" asp-action="Post" asp-route-slug="@item.Slug"><b>READ MORE »</b></a></p>
-                    </div>
-                    <div class="w3-col m4 w3-hide-small">
-                        <p><span class="w3-padding-large w3-right"><b>Comments  </b> <span class="w3-tag">0</span></span></p>
-                    </div>
+                </div>
+
+                <div style="position: absolute; bottom: 15px; right: 15px;">
+                    <a class="w3-button w3-black w3-border w3-small"
+                       asp-controller="Home"
+                       asp-action="Post"
+                       asp-route-slug="@item.Slug">
+                        <b>READ MORE &raquo;</b>
+                    </a>
                 </div>
             </div>
+
         </div>
         <hr>
     }
 
     <!-- END BLOG ENTRIES -->
+    @if(!Model.Any())
+    {
+        <div class="card text-center">
+            <div class="card-header">
+                Not Found
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Post Not Found</h5>
+                <p class="card-text">The Post you are looking for is not available.</p>
+                <a href="/Home/Index" class="btn btn-dark">Go Back To Home</a>
+            </div>
+            <div class="card-footer text-body-secondary">
+                Not Available
+            </div>
+        </div>
+    }
 </div>

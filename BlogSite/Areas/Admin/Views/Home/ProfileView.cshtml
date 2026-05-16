@@ -1,0 +1,99 @@
+﻿@model ProfileVM
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h2 class="fw-bold">Profile Management</h2>
+            <p class="text-muted">Update your personal details and account security</p>
+        </div>
+    </div>
+
+    <form asp-action="ProfileView" asp-controller="Home" asp-area="Admin" method="post" enctype="multipart/form-data">
+        <!-- Hidden Id field to ensure the record updates correctly -->
+        <input type="hidden" asp-for="Id" />
+
+        <div class="row g-4">
+
+            <!-- Left Side: Avatar & Username -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm text-center p-4">
+                    <div class="card-body">
+                        <div class="mb-3">
+
+                            <img src="~/Images/@ViewBag.ProfileImage"
+                                 id="profilePreview"
+                                 class="rounded-circle img-thumbnail shadow-sm"
+                                 style="width: 150px; height: 150px; object-fit: cover;"
+                                 alt="Profile Picture">
+                            
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="btn btn-outline-primary btn-sm px-4">
+                                Change Photo
+                                <input asp-for="Image" type="file" hidden />
+                            </label>
+                        </div>
+
+                        <hr>
+
+                        <div class="text-start">
+                            <label asp-for="username" class="form-label small fw-bold text-muted"></label>
+                            <input asp-for="username" class="form-control bg-light border-0" readonly />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Properties & Password -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm p-4">
+                    <div class="card-body">
+
+                        <h5 class="card-title fw-bold text-primary mb-4">Identity Details</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Name" class="form-label small fw-bold"></label>
+                                <input asp-for="Name" class="form-control" placeholder="Enter full name" />
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="FatherName" class="form-label small fw-bold"></label>
+                                <input asp-for="FatherName" class="form-control" placeholder="Enter father's name" />
+                                <span asp-validation-for="FatherName" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Bio" class="form-label small fw-bold"></label>
+                                <textarea asp-for="Bio" class="form-control" rows="3" placeholder="Tell us about yourself..."></textarea>
+                                <span asp-validation-for="Bio" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <h5 class="card-title fw-bold text-danger mb-4">Security Settings</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Password" class="form-label small fw-bold"></label>
+                                <input asp-for="Password" class="form-control" placeholder="New password" />
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="ConfirmPassword" class="form-label small fw-bold"></label>
+                                <input asp-for="ConfirmPassword" class="form-control" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mt-5 d-flex justify-content-end gap-2">
+                            <a href="/Admin/Home" class="btn btn-light px-4">Dashboard</a>
+                            <button type="submit" class="btn btn-primary px-5 fw-bold shadow-sm">Save Profile</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+

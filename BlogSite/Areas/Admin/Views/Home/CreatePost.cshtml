@@ -1,6 +1,8 @@
 ﻿@using BlogSite.ViewModel
 @model PostVM
-
+@{
+    var image = ViewBag.image;
+}
 <div class="container py-5">
     <div class="row mb-4">
         <div class="col-12">
@@ -17,17 +19,20 @@
 
                         <div class="mb-3">
                             <label asp-for="Title" class="form-label fw-bold text-muted small">TITLE</label>
-                            <input asp-for="Title" class="form-control form-control-lg bg-light" placeholder="Enter post title..." required />
+                            <input asp-for="Title" class="form-control form-control-lg bg-light" placeholder="Enter post title..."/>
+                            <span asp-validation-for="Title" class="text-danger small"></span>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="SubTitle" class="form-label fw-bold text-muted small">SUBTITLE</label>
-                            <input asp-for="SubTitle" class="form-control bg-light" placeholder="Short description..." required/>
+                            <input asp-for="SubTitle" class="form-control bg-light" placeholder="Short description..."/>
+                            <span asp-validation-for="SubTitle" class="text-danger small"></span>
                         </div>
 
                         <div class="mb-0">
                             <label asp-for="Content" class="form-label fw-bold small text-muted">BODY CONTENT</label>
                             <textarea asp-for="Content" id="editor"></textarea>
+                            <span asp-validation-for="Content" class="text-danger small"></span>
                         </div>
 
                     </div>
@@ -43,6 +48,7 @@
                         <div class="mb-3">
                             <label asp-for="Slug" class="form-label fw-bold text-muted small">URL SLUG</label>
                             <input asp-for="Slug" class="form-control" placeholder="my-blog-post" />
+                            <span asp-validation-for="Slug" class="text-danger small"></span>
                         </div>
 
                         <div class="mb-3">
@@ -57,6 +63,10 @@
                                 <i class="bi bi-cloud-arrow-up fs-2 text-secondary"></i>
                                 <input asp-for="Image" />
                             </div>
+                            @if(image==null)
+                            {
+                                <span  class="text-danger small">Image is Required</span>
+                            }
                         </div>
 
                         <div class="mt-auto pt-3">
